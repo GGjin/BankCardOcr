@@ -1,0 +1,15 @@
+
+android {
+
+    defaultConfig {
+        applicationId "com.gg.bankcardocr.test"
+
+
+    }
+
+
+}
+
+dependencies {
+
+}

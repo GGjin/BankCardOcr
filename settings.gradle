@@ -1,0 +1,3 @@
+include ':bankcardocrtest'
+include ':app'
+rootProject.name = "BankCardOcr"

@@ -1,0 +1,24 @@
+
+android {
+
+    defaultConfig {
+        applicationId "com.gg.bankcardocr"
+
+
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+}
+
+dependencies {
+
+}

@@ -1,0 +1,104 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+
+    apply from: 'versions.gradle'
+
+    addRepos(repositories)
+
+    dependencies {
+
+        classpath "com.android.tools.build:gradle:${versions.android_gradle_plugin}"
+        classpath deps.kotlin.plugin
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+
+allprojects {
+    addRepos(repositories)
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+
+subprojects {
+    def isAppModule = it.name == 'app' || 'bankcardocrtest'
+    apply plugin: isAppModule ? 'com.android.application' : 'com.android.library'
+
+    apply plugin: 'kotlin-android'
+    apply plugin: 'kotlin-android-extensions'   // 拓展
+
+    apply plugin: 'kotlin-kapt'
+
+    kapt {
+        generateStubs = true
+    }
+
+
+    android {
+
+        compileSdkVersion build_versions.target_sdk
+        buildToolsVersion build_versions.build_tools
+
+        defaultConfig {
+
+
+            minSdkVersion build_versions.min_sdk
+            targetSdkVersion build_versions.target_sdk
+            versionCode 1
+            versionName "1.0"
+
+            multiDexEnabled true
+            vectorDrawables.useSupportLibrary = true
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+
+        }
+
+        sourceSets {
+            main.java.srcDirs += 'src/main/kotlin'
+            if (isAppModule) {
+                main {
+                    jniLibs.srcDirs = ['libs']
+                }
+            }
+        }
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+
+        if (isAppModule) {
+            dataBinding {
+                enabled true
+            }
+        }
+        viewBinding {
+            enabled = true
+        }
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+
+
+    }
+
+    dependencies {
+
+        implementation fileTree(dir: 'libs', include: ['*.jar', '*aar'])
+
+        // kotlin
+        implementation deps.kotlin.stdlib
+        implementation deps.support.core_ktx
+        implementation deps.support.app_compat
+
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
