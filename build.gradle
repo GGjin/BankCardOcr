@@ -95,6 +95,7 @@ subprojects {
         implementation deps.kotlin.stdlib
         implementation deps.support.core_ktx
         implementation deps.support.app_compat
+        implementation deps.support.constraint_layout
 
     }
 

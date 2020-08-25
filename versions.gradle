@@ -37,6 +37,8 @@ support.app_compat = "androidx.appcompat:appcompat:$versions.appcompat"
 support.cardview = "androidx.cardview:cardview:$versions.support"
 support.core_utils = "androidx.legacy:legacy-support-core-utils:$versions.support"
 support.core_ktx = "androidx.core:core-ktx:$versions.core_ktx"
+support.constraint_layout  = "androidx.constraintlayout:constraintlayout:$versions.constraint_layout"
+
 deps.support = support
 
 
@@ -59,7 +61,7 @@ deps.kotlin = kotlin
 def build_versions = [:]
 build_versions.min_sdk = 23
 build_versions.target_sdk = 30
-build_versions.build_tools = "29.0.3"
+build_versions.build_tools = "30.0.2"
 ext.build_versions = build_versions
 
 
