@@ -5,6 +5,6 @@
 #include "BitmapMatUtils.h"
 
 
-int BitmapMatUtils::bitmap2mat(JNIEnv *env, jobject bitmap, Mat &mat) {
+int BitmapMatUtils::bitmap2mat(JNIEnv *env, jobject bitmap) {
 
 }

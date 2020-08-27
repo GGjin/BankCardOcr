@@ -62,7 +62,7 @@ subprojects {
             main.java.srcDirs += 'src/main/kotlin'
             if (isAppModule) {
                 main {
-                    jniLibs.srcDirs = ['libs']
+                    jniLibs.srcDirs = ["libs"]
                 }
             }
         }

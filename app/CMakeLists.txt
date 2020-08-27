@@ -13,13 +13,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 include_directories(${pathToOpenCv}/sdk/native/jni/include)
 
 add_library(
-        lib_opencv
-        STATIC
+        opencv_java4
+        SHARED
         IMPORTED)
 set_target_properties(
-        lib_opencv
+        opencv_java4
         PROPERTIES
-        IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/src/main/jniLibs/${}/libopencv_java4.so)
+        IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libopencv_java4.so)
 
 
 # Creates and names a library, sets it as either STATIC
@@ -35,9 +36,9 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        native-lib.cpp
-        ${PROJECT_SOURCE_DIR}/BitmapMatUtils.cpp
-        ${PROJECT_SOURCE_DIR}/cardocr.cpp)
+        ${CMAKE_SOURCE_DIR}/src/main/cpp/native-lib.cpp
+        ${CMAKE_SOURCE_DIR}/src/main/cpp/BitmapMatUtils.cpp
+        ${CMAKE_SOURCE_DIR}/src/main/cpp/cardocr.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -74,4 +75,6 @@ target_link_libraries( # Specifies the target library.
 
         # Links the target library to the log library
         # included in the NDK.
-        ${log-lib} android -ljnigraphics lib_opencv)
+        ${log-lib}
+        -ljnigraphics
+        opencv_java4)

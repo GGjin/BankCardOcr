@@ -6,14 +6,12 @@
 #define BANKCARDOCR_BITMAPMATUTILS_H
 
 #include <jni.h>
-#include "opencv2/opencv.hpp"
 
-using namespace cv;
 
 class BitmapMatUtils {
 
 public:
-    static int bitmap2mat(JNIEnv *env, jobject bitmap, Mat& mat);
+    static int bitmap2mat(JNIEnv *env, jobject bitmap);
 
 };
 
