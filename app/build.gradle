@@ -9,10 +9,17 @@ android {
             cmake {
                 cppFlags ""
                 abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+                arguments "-DANDROID_STL=c++_shared"
             }
         }
     }
 
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libopencv_java4.so'
+        pickFirst 'lib/arm64-v8a/libopencv_java4.so'
+        pickFirst 'lib/x86_64/libopencv_java4.so'
+        pickFirst 'lib/x86/libopencv_java4.so'
+    }
 
     externalNativeBuild {
         cmake {

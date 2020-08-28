@@ -4,13 +4,13 @@
 # Sets the minimum version of CMake required to build the native library.
 
 # Sets the minimum version of CMake required to build the native library.
-set(pathToOpenCv /Users/GG/Documents/dev/android/OpenCV-android-sdk)#设置OpenCv的路径变量
+#set(pathToOpenCv /Users/GG/Documents/dev/android/OpenCV-android-sdk)#设置OpenCv的路径变量
 cmake_minimum_required(VERSION 3.4.1)
 #支持-std=gnu++11
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 #配置加载native依赖
-include_directories(${pathToOpenCv}/sdk/native/jni/include)
+include_directories(${CMAKE_SOURCE_DIR}/src/main/cpp/include)
 
 add_library(
         opencv_java4
