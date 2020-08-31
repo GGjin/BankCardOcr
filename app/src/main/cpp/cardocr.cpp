@@ -94,3 +94,168 @@ int co1::find_card_number_area(const Mat &mat, Rect &area) {
 
     return 0;
 }
+
+
+int co1::find_card_numbers(const Mat &mat, vector<Mat> numbers) {
+
+    //1.灰度处理
+    Mat gray;
+    cvtColor(mat, gray, COLOR_BGRA2GRAY);
+
+    //2.二值化 找到合适自己的值，这一步非常关键
+    Mat binary;
+    threshold(gray, bitand, 39, 255, THRESH_BINARY);
+    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/binary.jpg", binary);
+
+
+    //3.降噪处理
+
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    morphologyEx(binary, binary, MORPH_CLOSE, kernel);
+
+    //4.取反白，  白黑->黑白
+
+    Mat binary_not = binary.clone();
+    bitwise_not(binary_not, binary_not);
+
+    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/binary_not.jpg", binary_not);
+
+    //5.查找轮廓
+    vector<vector<Point>> contours;
+    findContours(binary_not, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+    //6.去掉过多干扰项， 通过匹配数字的大小和轮廓信息
+    int mat_area = mat.rows * mat.cols;
+    int min_h = mat.rows / 4;
+
+    //通过匹配过小的轮廓和比较矮的轮廓，将其填充为黑色，来过滤掉图像
+    for (int i = 0; i < contours.size(); i++) {
+        Rect rect = boundingRect(contours[i]);
+        int area = rect.height * rect.width;
+
+        if (area < mat_area / 200) {
+            drawContours(binary_not, contours, i, Scalar(0), -1);
+        } else if (rect.height < min_h) {
+            drawContours(binary_not, contours, i, Scalar(0), -1);
+        }
+
+    }
+    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/binary_not_noise.jpg", binary_not);
+
+//    // 截取每个数字的轮廓 binary(没噪音) 不行，binary_not(有噪音)
+//    binary.copyTo(binary_not);
+//    bitwise_not(binary_not, binary_not);// 没有噪音的 binary_not
+
+    contours.clear();
+
+    findContours(binary_not, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+    //先把Rect存起来，查找可能出现的循环错误，还有可能出现粘连字符
+    Rect rects[contours.size()];
+
+    //构造一个白色的图片，单颜色
+    Mat contours_mat(binary.size(), CV_8UC1, Scalar(255));
+
+    int min_w = mat.cols;
+
+    for (int i = 0; i < contours.size(); i++) {
+        rects[i] = boundingRect(contours[i]);
+
+        drawContours(contours_mat, contours, i, Scalar(0), 1);
+
+        min_w = min(rects[i].width, min_w);
+
+    }
+
+    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/contours_mat.jpg", contours_mat);
+
+    //7.进行排序，防止存储数据错位
+    for (int i = 0; i < contours.size(); ++i) {
+        for (int j = 0; j < contours.size() - i; ++j) {
+            if (rects[j].x < rects[j + 1].x) {
+                swap(rects[j], rects[j + 1]);
+
+            }
+        }
+
+    }
+
+    //8.开始裁剪图片， 因为原图片 mat 是彩色图片，数据量太大，所有将图片转为单通道的 并且像素少一点的图片
+    numbers.clear();
+
+    for (int i = 0; i < contours.size(); i++) {
+        if (rects[i].width >= min_w * 2) {
+            Mat mat(contours_mat, rects[i]);
+
+            int cols_pos = co1::find_split_cols_pos(mat);
+            //左右两个数字都存进去
+            Rect rect_left(0, 0, cols_pos - 1, mat.rows);
+            numbers.push_back(Mat(mat, rect_left));
+            Rect rect_right(cols_pos, 0, mat.cols, mat.rows);
+            numbers.push_back(Mat(mat, rect_right));
+
+        } else {
+            Mat number(contours_mat, rects[i]);
+
+            numbers.push_back(number);
+
+
+        }
+
+    }
+
+
+    //保存数字图片
+    for (int i = 0; i < numbers.size(); ++i) {
+        char name[60];
+        sprintf(name, "/storage/emulated/0/Android/data/com.gg.bankcardocr/card_number_%d.jpg", i);
+        imwrite(name, numbers[i]);
+    }
+
+
+    gray.release();
+    binary.release();
+    binary_not.release();
+    contours_mat.release();
+
+    return 0;
+}
+
+int co1::find_split_cols_pos(const Mat &mat) {
+    //处理粘连字符，对中心位置左右的1/4开始扫描，记录最少的黑色像素点的这一列位置，就是粘连字符
+
+    int mid = mat.cols / 2;
+    int height = mat.rows;
+
+    //围绕中心左右扫描1/4
+    int start_x = mid - mid / 2;
+
+    int end_x = mid + mid / 2;
+    //字符的粘连位置
+    int cols_pos = mid;
+    //获取像素数，0~255
+
+    int c = 0;
+    //最小的像素数
+    int min_h_p = mat.rows;
+
+    for (int col = start_x; col < end_x; ++col) {
+        int total = 0;
+        for (int row = 0; row < height; ++row) {
+            //获取像素点，opencv 基础第一堂课
+            c = mat.at<Vec3b>(row, col)[0];
+            //c==0 就是黑色，是黑色的情况下就++；这样就统计出来这一竖列的像素点的个数
+            if (c == 0) {
+                total++;
+            }
+
+        }
+        if (total < min_h_p) {
+            min_h_p = total;
+            cols_pos = col;
+        }
+    }
+    return cols_pos;
+
+
+}
