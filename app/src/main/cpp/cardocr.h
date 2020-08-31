@@ -11,13 +11,21 @@ using namespace cv;
 
 namespace co1 {
 
-/**
- * 找到银行卡区域
- * @param mat  图片的mat
- * @param area  卡号区域
- * @return 是否成功 0成功 其他失败
- */
+    /**
+     * 找到银行卡区域
+     * @param mat  图片的mat
+     * @param area  卡号区域
+     * @return 是否成功 0成功 其他失败
+     */
     int find_card_ocr(const Mat &mat, Rect &area);
+
+    /**
+     * 裁剪银行卡号区域
+     * @param mat
+     * @param area
+     * @return
+     */
+    int find_card_number_area(const Mat &mat, Rect &area);
 }
 
 
