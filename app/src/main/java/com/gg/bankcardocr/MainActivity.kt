@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         externalCacheDir!!.absolutePath + File.separator
 
-        moveApkFromAssets(this,"card_n.png")
+        moveApkFromAssets(this,"card.png")
 
         sample_text.setOnClickListener {
             val cardNumber = BankCardOcr.carOcr(mCardBitmap)

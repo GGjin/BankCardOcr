@@ -29,12 +29,15 @@ Java_com_gg_bankcardocr_BankCardOcr_carOcr(JNIEnv *env, jobject thiz, jobject bi
     Rect card_number_area;
     find_card_number_area(cart_mat, card_number_area);
 
-//    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/cart_mat.jpg", cart_mat);
-//    __android_log_print(ANDROID_LOG_WARN, "TAG", "cart_mat");
 
+    //4. 银行卡号区域裁剪
+    Mat card_number_mat(mat, card_number_area);
+//    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/card_number_mat.jpg", card_number_mat);
+//    __android_log_print(ANDROID_LOG_WARN, "TAG", "card_number_mat");
 
     vector<Mat> numbers;
 
+    find_card_numbers(card_number_mat, numbers);
 
 
     return env->NewStringUTF("622848");
