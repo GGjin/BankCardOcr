@@ -103,26 +103,28 @@ int co1::find_card_numbers(const Mat &mat, vector<Mat> numbers) {
     cvtColor(mat, gray, COLOR_BGR2GRAY);
 
 
-    vector< Mat > splitBGR(gray.channels());
+    vector<Mat> splitBGR(gray.channels());
     //分割通道，存储到splitBGR中
     split(gray, splitBGR);
     //对各个通道分别进行直方图均衡化
-    for (int i = 0; i<gray.channels(); i++)
+    for (int i = 0; i < gray.channels(); i++)
         equalizeHist(splitBGR[i], splitBGR[i]);
     //合并通道
     merge(splitBGR, gray);
 
-    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/number_gray_channel.jpg", gray);
-    //2.二值化 找到合适自己的值，这一步非常关键
+//    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/number_gray_channel.jpg", gray);
+//    //2.二值化 找到合适自己的值，这一步非常关键
     Mat binary;
-    threshold(gray, binary, 20, 255, THRESH_BINARY_INV );
-    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/number_binary.jpg", binary);
+    threshold(gray,binary, 40, 255, THRESH_BINARY );
+//    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/number_binary.jpg", binary);
 
 
-//    //3.降噪处理
-//
-//    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
-//    morphologyEx(binary, binary, MORPH_CLOSE, kernel);
+    //3.降噪处理
+
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    morphologyEx(binary, binary, MORPH_CLOSE, kernel);
+    imwrite("/storage/emulated/0/Android/data/com.gg.bankcardocr/kernel.jpg", kernel);
+
 //
 //    //4.取反白，  白黑->黑白
 //

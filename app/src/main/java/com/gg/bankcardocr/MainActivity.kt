@@ -24,11 +24,11 @@ class MainActivity : AppCompatActivity() {
         // Example of a call to a native method
 
 
-        val mCardBitmap = BitmapFactory.decodeResource(resources, R.drawable.card_n)
+        val mCardBitmap = BitmapFactory.decodeResource(resources, R.drawable.card)
 
         externalCacheDir!!.absolutePath + File.separator
 
-        moveApkFromAssets(this,"card.png")
+        moveApkFromAssets(this, "card_n.png")
 
         sample_text.setOnClickListener {
             val cardNumber = BankCardOcr.carOcr(mCardBitmap)
@@ -38,7 +38,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun getAppPath(context: Context, name: String) = context.externalCacheDir!!.absolutePath + File.separator + name
+    fun getAppPath(context: Context, name: String) =
+        context.externalCacheDir!!.absolutePath + File.separator + name
 
 
     fun moveApkFromAssets(context: Context, name: String): Boolean {
